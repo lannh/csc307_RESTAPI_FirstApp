@@ -41,12 +41,20 @@ app.get('/', (req, res) => {
     res.send("Hello World!");
 });
 
-//get user by name
+//get user by name or name && job
 app.get('/users', (req, res) => {
     const name = req.query.name;
+    const job = req.query.job;
+
     if(name != undefined)
     {
-        let result = findUserByName(name);
+        let result;
+
+        if(job != undefined)
+            result = findUserByNameNJob(name, job);
+        else
+            result = findUserByName(name);
+
         result = {users_list: result};
         res.send(result);
     }
@@ -59,6 +67,12 @@ app.get('/users', (req, res) => {
 const findUserByName = (name) =>
 {
     return users['users_list'].filter( (user) => user['name'] === name);
+}
+
+const findUserByNameNJob = (name, job) =>
+{
+    return users['users_list'].filter( (user) => user['name'] === name && 
+            user['job'] === job);
 }
 
 //get user by id
@@ -77,7 +91,7 @@ app.get('/users/:id', (req, res) => {
 function findUserById(id)
 {
     return users['users_list'].find( (user) => user['id'] === id);
-    //or return users['users_list'].filter((user) => user['id]===id)
+    //or return users['users_list'].filter((user) => user['id']===id)
 }
 
 //add new user 
@@ -101,11 +115,10 @@ app.delete('/users', (req, res) => {
 
 function delUserByID(id)
 {
-    const index = users['users_list'].findIndex((user) => user.id === id);
+    const index = users['users_list'].findIndex((user) => user['id'] === id);
     if(index!==-1)
         users['users_list'].splice(index,1);
 }
-
 
 app.listen(port, () => {
     console.log('Example listening at http://localhost:${port}');
