@@ -36,10 +36,12 @@ const users = {
 
 app.use(express.json());
 
+//root
 app.get('/', (req, res) => {
     res.send("Hello World!");
 });
 
+//get user by name
 app.get('/users', (req, res) => {
     const name = req.query.name;
     if(name != undefined)
@@ -59,6 +61,7 @@ const findUserByName = (name) =>
     return users['users_list'].filter( (user) => user['name'] === name);
 }
 
+//get user by id
 app.get('/users/:id', (req, res) => {
     const id = req.params['id']; //or req.params.id
     let result = findUserById(id);
@@ -77,6 +80,7 @@ function findUserById(id)
     //or return users['users_list'].filter((user) => user['id]===id)
 }
 
+//add new user 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd);
@@ -86,6 +90,20 @@ app.post('/users', (req, res) => {
 function addUser(user)
 {
     users['users_list'].push(user);
+}
+
+//delete user by id
+app.delete('/users', (req, res) => {
+    const idToDel = req.body.id;
+    delUserByID(idToDel);
+    res.status(200).end();
+});
+
+function delUserByID(id)
+{
+    const index = users['users_list'].findIndex((user) => user.id === id);
+    if(index!==-1)
+        users['users_list'].splice(index,1);
 }
 
 
