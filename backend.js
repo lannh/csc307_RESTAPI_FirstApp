@@ -143,10 +143,14 @@ function addUser(user)
 }
 
 //delete user by id
-app.delete('/users', (req, res) => {
-    const idToDel = req.body.id;
-    delUserByID(idToDel);
-    res.status(200).end();
+app.delete('/users/:id', (req, res) => {
+    const idToDel = req.params.id;
+    let foundIndex = delUserByID(idToDel);
+
+    if(foundIndex === -1)
+        res.status(404).send('resource not found').end();
+    else
+        res.status(204).end();
 });
 
 function delUserByID(id)
@@ -154,6 +158,7 @@ function delUserByID(id)
     const index = users['users_list'].findIndex((user) => user['id'] === id);
     if(index!==-1)
         users['users_list'].splice(index,1);
+    return index;
 }
 
 app.listen(port, () => {
