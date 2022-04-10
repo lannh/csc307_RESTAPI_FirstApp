@@ -35,9 +35,34 @@ const users = {
     ]
  }
 
+ const lengthID = 6;
+
 app.use(cors());
 
 app.use(express.json());
+
+function idGenerator()
+{
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const digits = "0123456789";
+    let n = chars.length;
+    let newId = "";
+    let i;
+
+    for(i=0; i<Math.floor(lengthID/2); ++i)
+    {
+        newId += chars.charAt(Math.floor(Math.random() * n));
+    }
+
+    n = digits.length;
+    for(i; i<lengthID; ++i)
+    {
+        newId += digits.charAt(Math.floor(Math.random() * n));
+    }
+    
+    return newId;
+}
+
 
 //root
 app.get('/', (req, res) => {
@@ -106,6 +131,14 @@ app.post('/users', (req, res) => {
 
 function addUser(user)
 {
+    let result;
+
+    //generate id until found a unique id
+    do {
+        user.id = idGenerator()  
+        result = findUserById(user.id);
+    } while(result !== undefined && result.length !== 0);
+
     users['users_list'].push(user);
 }
 
@@ -126,3 +159,4 @@ function delUserByID(id)
 app.listen(port, () => {
     console.log('Example listening at http://localhost:${port}');
 });
+
